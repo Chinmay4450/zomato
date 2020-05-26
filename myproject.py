@@ -28,6 +28,9 @@ db = mongo_client.testzomato
 kothruddb = db.kothrud
 aundhdb = db.aundh
 parvatidb = db.parvati
+shivajinagardb = db.shivajinagar
+sadashivpethdb = db.sadashivpeth
+koregaonparkdb = db.koregaonpark
 
 
 app = Flask(__name__)
@@ -61,7 +64,7 @@ def mlprediction():
     #  }
     
     data = request.get_json(force=True)
-    print(data)
+   
     data1 = data['first']
     data2 = data['second']
     data3 = data['third']
@@ -69,26 +72,28 @@ def mlprediction():
     data5 = data['fifth']
 
     resultadd = int(data3) + int(data4) +int(data5)
-    # rlist = func(datav)
-    # df = pd.io.json.json_normalize(rlist)
-    # menuitems=df['cuisines']
-    # print(menuitems)
-    # data = request.get_json(force=True)
-    # val1=data['value']
-    # dataset = pd.read_csv('/home/wideeye/Pictures/jango/Linear Regression/Salary_Data.csv')
-    # X = dataset.iloc[:, :-1].values
-    # y = dataset.iloc[:, 1].values
+    rlist = prediction(data1)
+    df = pd.io.json.json_normalize(rlist)
+    X = df[['average_cost_for_two','has_table_booking','has_online_delivery','is_delivering_now']]
+    y = df['aggregate_rating']
 
-    # from sklearn.model_selection import train_test_split
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=0)
+    from sklearn.model_selection import train_test_split 
+    from sklearn.metrics import confusion_matrix, classification_report
+    from sklearn.metrics import accuracy_score
+    from sklearn.tree import DecisionTreeClassifier
 
-    # from sklearn.linear_model import LinearRegression
-    # regressor = LinearRegression()
-    # regressor.fit(X_train, y_train)
+# Create training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, 
+                                                    random_state=2019)
 
-    # predicted_salary = int(regressor.predict([[int(val1)]]))
+    clf = DecisionTreeClassifier(max_depth=3)
+    clf = clf.fit(X_train,y_train)
 
-    return jsonify({'result': resultadd})
+    y_pred = clf.predict([[int(data2),int(data3),int(data4),int(data5)]])
+    
+    
+
+    return jsonify({'result': float(y_pred)})
 
 
 # def loaddatafunc(col_name,nearby_restaurants):
@@ -102,9 +107,11 @@ def getdata():
     data = request.get_json(force=True)
     datav = data['value']
     aundh = {"18.5602": "73.8031"}
-    kothrud = {"18.4949": "73.8441"}
-    parvati = {"18.4949": "73.8441"}
-    shivajinagar = {"18.5314 : 73.8446"}
+    kothrud = {"18.5074": "73.8077"}
+    parvati = {"18.4923": "73.8547"}
+    shivajinagar = {"18.5314" : "73.8446"}
+    sadashivpeth = {"18.5082" : "73.8441"}
+    koregaonpark = {"18.5362" : "73.8940"}
     if datav == "kothrud":
         geoList = [kothrud]
     if datav == "aundh":
@@ -113,6 +120,10 @@ def getdata():
         geoList = [parvati]
     if datav == "shivajinagar":
         geoList = [shivajinagar]
+    if datav == "sadashivpeth":
+        geoList = [sadashivpeth]
+    if datav == "koregaonpark":
+        geoList = [koregaonpark]        
     nearby_restaurants = []
     header = {"User-agent": "curl/7.43.0", "Accept": "application/json",
               "user_key": "cb4e85bf9a21ce81d81f16062f44c948"}
@@ -152,6 +163,22 @@ def getdata():
         except Exception as e:
             print("error")
 
+    if datav == "shivajinagar":
+        try:
+            result = shivajinagardb.insert_many(nearby_restaurants)
+        except Exception as e:
+            print("error")
+    if datav == "sadashivpeth":
+        try:
+            result = sadashivpethdb.insert_many(nearby_restaurants)
+        except Exception as e:
+            print("error")
+    if datav == "koregaonpark":
+        try:
+            result = koregaonparkdb.insert_many(nearby_restaurants)
+        except Exception as e:
+            print("error")                        
+
     return json.dumps(nearby_restaurants, default=str)
 
 
@@ -176,13 +203,14 @@ def menuitem(col_name):
     listt = db.find({}, {'cuisines': 1, "_id": 0})
     menulist = list(listt)
 
-    return menuitems
+    return menulist
 
 def prediction(col_name):
     mongo_client = MongoClient('localhost', 27017)
     db = mongo_client.testzomato[col_name]
-    listt = db.find({}, {"_id": 0, "name": 0, "location": 0, "aggregate_rating": 0,
-                         "rating_text": 0, "average_cost_for_two": 0})
+    listt = db.find({},{"_id":0,"average_cost_for_two":1,"has_table_booking":1,
+                                  "has_online_delivery":1,"is_delivering_now":1,
+                                    "aggregate_rating":1})
     menulist = list(listt)
 
     return menulist
@@ -192,7 +220,7 @@ def prediction(col_name):
 def hotelsmenus(location):
     
     location = location
-    menulist = func(location)
+    menulist = menuitem(location)
     cuisines = []
     for i in menulist:
         cuisines.append(i['cuisines'])
@@ -221,11 +249,10 @@ def hotelsmenus(location):
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(figfile.getvalue()).decode('utf8')    
     
-    #return jsonify({'img': pngImageB64String})
-    plt.close('all')
-    return render_template("hello.html", image=pngImageB64String)
     
-    #return {"data": counts}
+    plt.close('all')
+    return jsonify({'img': pngImageB64String})
+    
 
 @app.route('/ml/onlinedelivery/<location>', methods=['GET'])
 def onlinedelivery(location):
@@ -260,8 +287,8 @@ def onlinedelivery(location):
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
     
-    #return jsonify({'img': pngImageB64String})
-    return render_template("hello.html", image=pngImageB64String)
+    return jsonify({'img': pngImageB64String})
+    # return render_template("hello.html", image=pngImageB64String)
 
 
 @app.route('/ml/tablebooking/<location>', methods=['GET'])
@@ -297,9 +324,9 @@ def tablebooking(location):
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
     
-    #return jsonify({'img': pngImageB64String})
+    return jsonify({'img': pngImageB64String})
     
-    return render_template("hello.html", image=pngImageB64String)   
+    # return render_template("hello.html", image=pngImageB64String)   
 
 @app.route('/ml/deliveringnow/<location>', methods=['GET'])
 def deliveringnow(location):
@@ -333,12 +360,13 @@ def deliveringnow(location):
     pngImageB64String = "data:image/png;base64,"
     pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
     
-    #return jsonify({'img': pngImageB64String})
+    return jsonify({'img': pngImageB64String})
     
-    return render_template("hello.html", image=pngImageB64String) 
+    #return render_template("hello.html", image=pngImageB64String) 
 
 
     #return {"data": [deliveringNowyes,deliveringNowno]}
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(port=5002)
+
