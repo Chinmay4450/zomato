@@ -22,6 +22,8 @@ import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
+matplotlib.use('Agg')
+
 
 mongo_client = MongoClient('localhost', 27017)
 db = mongo_client.testzomato
@@ -35,65 +37,63 @@ koregaonparkdb = db.koregaonpark
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def hello(name=None):
     return render_template('login.html')
 
+database={'admin':'1234'}
 
-database = {'admin': '1234'}
-
-
-@app.route('/zomato', methods=['POST', 'GET'])
+@app.route('/zomato',methods=['POST','GET'])
 def login():
-    name1 = request.form['username']
-    pwd = request.form['password']
+    name1=request.form['username']
+    pwd=request.form['password']
     if name1 not in database:
-        return render_template('login.html', info='Invalid User')
+	    return render_template('login.html',info='Invalid User')
     else:
-        if database[name1] != pwd:
-            return render_template('login.html', info='Invalid Password')
+        if database[name1]!=pwd:
+            return render_template('login.html',info='Invalid Password')
         else:
-            return render_template('index.html')
+	        return render_template('index.html')
 
 
-@app.route('/ml/prediction', methods=['GET', 'POST'])
+@app.route('/ml/prediction', methods=['GET','POST'])
 def mlprediction():
     # {
-        # "first":10 ,
-        # "second":10,
-        # "third":10,
-        # "fourth":10
+	# "first":10 ,
+	# "second":10,
+	# "third":10,
+	# "fourth":10
     #  }
-
+    
     data = request.get_json(force=True)
-
+   
     data1 = data['first']
     data2 = data['second']
     data3 = data['third']
     data4 = data['fourth']
     data5 = data['fifth']
 
-    resultadd = int(data3) + int(data4) + int(data5)
+    resultadd = int(data3) + int(data4) +int(data5)
     rlist = prediction(data1)
     df = pd.io.json.json_normalize(rlist)
-    X = df[['average_cost_for_two', 'has_table_booking',
-            'has_online_delivery', 'is_delivering_now']]
+    X = df[['average_cost_for_two','has_table_booking','has_online_delivery','is_delivering_now']]
     y = df['aggregate_rating']
 
-    from sklearn.model_selection import train_test_split
+    from sklearn.model_selection import train_test_split 
     from sklearn.metrics import confusion_matrix, classification_report
     from sklearn.metrics import accuracy_score
     from sklearn.tree import DecisionTreeClassifier
 
 # Create training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
-                                                        random_state=2019)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, 
+                                                    random_state=2019)
 
     clf = DecisionTreeClassifier(max_depth=3)
-    clf = clf.fit(X_train, y_train)
+    clf = clf.fit(X_train,y_train)
 
-    y_pred = clf.predict([[int(data2), int(data3), int(data4), int(data5)]])
+    y_pred = clf.predict([[int(data2),int(data3),int(data4),int(data5)]])
+    
+    
 
     return jsonify({'result': float(y_pred)})
 
@@ -111,9 +111,9 @@ def getdata():
     aundh = {"18.5602": "73.8031"}
     kothrud = {"18.5074": "73.8077"}
     parvati = {"18.4923": "73.8547"}
-    shivajinagar = {"18.5314": "73.8446"}
-    sadashivpeth = {"18.5082": "73.8441"}
-    koregaonpark = {"18.5362": "73.8940"}
+    shivajinagar = {"18.5314" : "73.8446"}
+    sadashivpeth = {"18.5082" : "73.8441"}
+    koregaonpark = {"18.5362" : "73.8940"}
     if datav == "kothrud":
         geoList = [kothrud]
     if datav == "aundh":
@@ -125,7 +125,7 @@ def getdata():
     if datav == "sadashivpeth":
         geoList = [sadashivpeth]
     if datav == "koregaonpark":
-        geoList = [koregaonpark]
+        geoList = [koregaonpark]        
     nearby_restaurants = []
     header = {"User-agent": "curl/7.43.0", "Accept": "application/json",
               "user_key": "cb4e85bf9a21ce81d81f16062f44c948"}
@@ -179,7 +179,7 @@ def getdata():
         try:
             result = koregaonparkdb.insert_many(nearby_restaurants)
         except Exception as e:
-            print("error")
+            print("error")                        
 
     return json.dumps(nearby_restaurants, default=str)
 
@@ -207,13 +207,12 @@ def menuitem(col_name):
 
     return menulist
 
-
 def prediction(col_name):
     mongo_client = MongoClient('localhost', 27017)
     db = mongo_client.testzomato[col_name]
-    listt = db.find({}, {"_id": 0, "average_cost_for_two": 1, "has_table_booking": 1,
-                         "has_online_delivery": 1, "is_delivering_now": 1,
-                         "aggregate_rating": 1})
+    listt = db.find({},{"_id":0,"average_cost_for_two":1,"has_table_booking":1,
+                                  "has_online_delivery":1,"is_delivering_now":1,
+                                    "aggregate_rating":1})
     menulist = list(listt)
 
     return menulist
@@ -221,7 +220,7 @@ def prediction(col_name):
 
 @app.route('/ml/famousmenu/<location>', methods=['GET'])
 def hotelsmenus(location):
-
+    
     location = location
     menulist = menuitem(location)
     cuisines = []
@@ -239,26 +238,30 @@ def hotelsmenus(location):
         if word in counts:
             counts[word] += 1
         else:
-            counts[word] = 1
-
+            counts[word] = 1  
+            
     plt.barh(range(len(counts)), list(counts.values()), align='center')
     plt.yticks(range(len(counts)), list(counts.keys()))
+    plt.title('Famous Menu')
     plt.xticks([])
-
-    # plt.show()
+    
+    
+    #plt.show()
     figfile = BytesIO()
     plt.savefig(figfile, format='png')
 
     pngImageB64String = "data:image/png;base64,"
-    pngImageB64String += base64.b64encode(figfile.getvalue()).decode('utf8')
-
+    pngImageB64String += base64.b64encode(figfile.getvalue()).decode('utf8')    
+    
+    
     plt.close('all')
     return jsonify({'img': pngImageB64String})
-
+    #return render_template("hello.html", image=pngImageB64String)
+    
 
 @app.route('/ml/onlinedelivery/<location>', methods=['GET'])
 def onlinedelivery(location):
-
+    
     location = location
     rlist = func(location)
     onlineDeliveryyes = 0
@@ -268,30 +271,29 @@ def onlinedelivery(location):
         if i['has_online_delivery'] == 1:
             onlineDeliveryyes = onlineDeliveryyes + 1
         if i['has_online_delivery'] == 0:
-            onlineDeliveryno = onlineDeliveryno+1
-
+            onlineDeliveryno = onlineDeliveryno+1 
+    
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
     labels = 'No', 'Yes'
-    sizes = [onlineDeliveryno, onlineDeliveryyes]
-    explode = (0.2, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+    sizes = [onlineDeliveryno,onlineDeliveryyes]
+    explode = (0.2,0)  # only "explode" the 2nd slice (i.e. 'Hogs')
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-            shadow=True, startangle=30)
-    # Equal aspect ratio ensures that pie is drawn as a circle.
-    ax1.axis('equal')
-
-    # plt.show()
+        shadow=True, startangle=30)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    fig1.suptitle('Online delivery', fontsize=12)
+    #plt.show()
 
     # Convert plot to PNG image
     pngImage = io.BytesIO()
     FigureCanvas(fig1).print_png(pngImage)
-
+    
     # Encode PNG image to base64 string
     pngImageB64String = "data:image/png;base64,"
-    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
-
+    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
+    plt.close('all')
     return jsonify({'img': pngImageB64String})
-    # return render_template("hello.html", image=pngImageB64String)
+    #return render_template("hello.html", image=pngImageB64String)
 
 
 @app.route('/ml/tablebooking/<location>', methods=['GET'])
@@ -305,32 +307,31 @@ def tablebooking(location):
         if i['has_table_booking'] == 1:
             tableBookingyes = tableBookingyes + 1
         if i['has_table_booking'] == 0:
-            tableBookingno = tableBookingno+1
+            tableBookingno = tableBookingno+1 
+    
 
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
     labels = 'No', 'Yes'
-    sizes = [tableBookingno, tableBookingyes]
-    explode = (0.2, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+    sizes = [tableBookingno,tableBookingyes]
+    explode = (0.2,0)  # only "explode" the 2nd slice (i.e. 'Hogs')
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-            shadow=True, startangle=30)
-    # Equal aspect ratio ensures that pie is drawn as a circle.
-    ax1.axis('equal')
-
-    # plt.show()
+        shadow=True, startangle=30)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    fig1.suptitle('Table Booking', fontsize=12)
+    #plt.show()
 
     # Convert plot to PNG image
     pngImage = io.BytesIO()
     FigureCanvas(fig1).print_png(pngImage)
-
+    
     # Encode PNG image to base64 string
     pngImageB64String = "data:image/png;base64,"
-    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
-
+    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
+    plt.close('all')
     return jsonify({'img': pngImageB64String})
-
-    # return render_template("hello.html", image=pngImageB64String)
-
+    
+    #return render_template("hello.html", image=pngImageB64String)   
 
 @app.route('/ml/deliveringnow/<location>', methods=['GET'])
 def deliveringnow(location):
@@ -343,34 +344,34 @@ def deliveringnow(location):
         if i['is_delivering_now'] == 1:
             deliveringNowyes = deliveringNowyes + 1
         if i['is_delivering_now'] == 0:
-            deliveringNowno = deliveringNowno+1
-
+            deliveringNowno = deliveringNowno+1 
+    
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
     labels = 'No', 'Yes'
-    sizes = [deliveringNowno, deliveringNowyes]
-    explode = (0.2, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+    sizes = [deliveringNowno,deliveringNowyes]
+    explode = (0.2,0)  # only "explode" the 2nd slice (i.e. 'Hogs')
     fig1, ax1 = plt.subplots()
     ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
-            shadow=True, startangle=30)
-    # Equal aspect ratio ensures that pie is drawn as a circle.
-    ax1.axis('equal')
-
-    # plt.show()
+        shadow=True, startangle=30)
+    ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    fig1.suptitle('Delivering Now', fontsize=12)
+    #plt.show()
 
     # Convert plot to PNG image
     pngImage = io.BytesIO()
     FigureCanvas(fig1).print_png(pngImage)
-
+    
     # Encode PNG image to base64 string
     pngImageB64String = "data:image/png;base64,"
-    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')
-
+    pngImageB64String += base64.b64encode(pngImage.getvalue()).decode('utf8')    
+    plt.close('all')
     return jsonify({'img': pngImageB64String})
+    
+    #return render_template("hello.html", image=pngImageB64String) 
 
-    # return render_template("hello.html", image=pngImageB64String)
 
-    # return {"data": [deliveringNowyes,deliveringNowno]}
-
+    #return {"data": [deliveringNowyes,deliveringNowno]}
 
 if __name__ == '__main__':
     app.run(port=5002)
+
