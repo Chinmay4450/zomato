@@ -38,21 +38,21 @@ function plot_all_charts(location) {
     type: "GET",
   }).done(function (result) {
     console.log(result);
-    $("#famous_chart").attr("src", result.img)
+    $("#online_chart").attr("src", result.img)
   })
   $.ajax({
-    url: "./ml/famousmenu/" + location,
+    url: "./ml/tablebooking" + location,
     type: "GET",
   }).done(function (result) {
     console.log(result);
-    $("#famous_chart").attr("src", result.img)
+    $("#table_chart").attr("src", result.img)
   })
   $.ajax({
-    url: "./ml/famousmenu/" + location,
+    url: "./ml/deliveringnow/" + location,
     type: "GET",
   }).done(function (result) {
     console.log(result);
-    $("#famous_chart").attr("src", result.img)
+    $("#delivering_chart").attr("src", result.img)
   })
 }
 
