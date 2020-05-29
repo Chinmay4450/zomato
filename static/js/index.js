@@ -34,7 +34,7 @@ function plot_all_charts(location) {
     $("#famous_chart").attr("src", result.img)
   })
   $.ajax({
-    url: "./ml/onlinedelivery" / + location,
+    url: "./ml/onlinedelivery/" + location,
     type: "GET",
     async: false
   }).done(function (result) {
