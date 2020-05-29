@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zomato Analysis</title>
   <link rel="stylesheet" type="text/css"
-          href= "{{ url_for('static',filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}" >
- 
+    href="{{ url_for('static',filename='node_modules/bootstrap/dist/css/bootstrap.min.css') }}">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
 
-  
+
 
   <link rel="stylesheet" href=" {{ url_for('static',filename='css/styless.css') }} ">
 
@@ -50,7 +50,7 @@
       <select class="selectpicker" id="booking" title="tablebooking">
         <option value="1">Yes</option>
         <option value="0">No</option>
-        
+
       </select>
 
       <select class="selectpicker" id="onlined" title="onlinedilivery">
@@ -67,7 +67,6 @@
       <button id="submit_btn" type="button" class="btn btn-outline-primary">Submit</button>
 
     </div>
-    
 
 
 
@@ -79,7 +78,13 @@
     </div>
 
     <div class="mt-5 text-center">
-      <img id="famousmenu" alt="chart">
+      <img id="famous_chart" alt="chart">
+    </div>
+
+    <div class="d-flex justify-content-around">
+      <img id="online_chart" alt="chart">
+      <img id="table_chart" alt="chart">
+      <img id="dilivering_chart" alt="chart">
     </div>
 
 
@@ -95,7 +100,7 @@
   <script src="{{ url_for('static',filename='node_modules/g1/dist/g1.min.js')}}"></script>
   <script src="{{ url_for('static',filename='node_modules/prismjs/prism.js')}}"></script>
   <script src="{{ url_for('static',filename='js/index.js')}}"></script>
-  
+
 </body>
 
 </html>

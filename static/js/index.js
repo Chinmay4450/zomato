@@ -1,32 +1,58 @@
 $('body')
-    .on("click", "#submit_btn", function () {
-        console.log("clicked")
+  .on("click", "#submit_btn", function () {
+    console.log("clicked")
+    var dict = {}
+    dict["first"] = $("#loca").val()
+    dict["second"] = $("#avg").val()
+    dict["third"] = $("#booking").val()
+    dict["fourth"] = $("#onlined").val()
+    dict["fifth"] = $("#dilivering").val()
+    log_text(dict)
 
-        var dict = {}
+    plot_all_charts(dict["first"])
 
-        dict["first"] = $("#loca").val()
-        dict["second"] = $("#avg").val()
-        dict["third"] = $("#booking").val()
-        dict["fourth"] = $("#onlined").val()
-        dict["fifth"] = $("#dilivering").val()
+  })
 
-        log_text(dict)
 
-    })
-    
-   
 
 function log_text(data) {
-    $.ajax({
-        url: "./ml/prediction",
-        type: "POST",
-        // dataType: 'json', 
-        // contentType: 'application/json;charset=UTF-8',    
-        data: JSON.stringify(data)
-    }).done(function (result)
-    
-    { $("#rating_text").text(result['result']) })
+  $.ajax({
+    url: "./ml/prediction",
+    type: "POST",
+    data: JSON.stringify(data)
+  }).done(function (result) {
+    $("#rating_text").text(result['result'])
+  })
 }
-    
 
-        
+function plot_all_charts(location) {
+  $.ajax({
+    url: "./ml/famousmenu/" + location,
+    type: "GET",
+  }).done(function (result) {
+    console.log(result);
+    $("#famous_chart").attr("src", result.img)
+  })
+  $.ajax({
+    url: "./ml/onlinedelivery" + location,
+    type: "GET",
+  }).done(function (result) {
+    console.log(result);
+    $("#famous_chart").attr("src", result.img)
+  })
+  $.ajax({
+    url: "./ml/famousmenu/" + location,
+    type: "GET",
+  }).done(function (result) {
+    console.log(result);
+    $("#famous_chart").attr("src", result.img)
+  })
+  $.ajax({
+    url: "./ml/famousmenu/" + location,
+    type: "GET",
+  }).done(function (result) {
+    console.log(result);
+    $("#famous_chart").attr("src", result.img)
+  })
+}
+
