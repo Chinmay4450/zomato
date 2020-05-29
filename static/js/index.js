@@ -10,7 +10,6 @@ $('body')
     log_text(dict)
 
     plot_all_charts(dict["first"])
-
   })
 
 
@@ -34,14 +33,14 @@ function plot_all_charts(location) {
     $("#famous_chart").attr("src", result.img)
   })
   $.ajax({
-    url: "./ml/onlinedelivery" + location,
+    url: "./ml/onlinedelivery" / + location,
     type: "GET",
   }).done(function (result) {
     console.log(result);
     $("#online_chart").attr("src", result.img)
   })
   $.ajax({
-    url: "./ml/tablebooking" + location,
+    url: "./ml/tablebooking/" + location,
     type: "GET",
   }).done(function (result) {
     console.log(result);
