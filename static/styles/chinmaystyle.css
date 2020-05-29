@@ -1,32 +1,29 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-.hero{
+.hero {
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url(zomatofood.jpg); 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(zomatofood.jpg);
     background-position: center;
     background-size: cover;
     position: absolute;
-
 }
 
-.form-box{
+.form-box {
     width: 380px;
     height: 450px;
     position: relative;
     margin: 6% auto;
     background: #fff;
     padding: 5px;
-    
 }
 
-
-.headbox{
+.headbox {
     width: 320px;
-    text-align :center;  
+    text-align: center;
     margin: 55px 0 0 33px;
     box-shadow: 0 0 40px 9px rgb(78, 229, 240);
     border-radius: 30px;
@@ -35,49 +32,45 @@
     /* opacity: 0.7;  */
 }
 
-.loginclss{
-    text-align :center;  
+.loginclss {
+    text-align: center;
     margin: 40px 0 0 0;
     color: red;
     text-align: center;
     font-size: 40px;
     font-family: Vivaldi, cursive;
     font-style: oblique;
-    
 }
 
-.inputparameter{
-
-top: 230px;
-right: 60px;
-position: absolute;
-width: 280px;
-transition: .5s;
-
+.inputparameter {
+    top: 230px;
+    right: 60px;
+    position: absolute;
+    width: 280px;
+    transition: .5s;
 }
-.input_field{
- width: 80%;
- margin: 20px 0;
- border-left: 0;
- border-top: 0;
- border-right: 0;
- border-bottom: 1px solid #999;
- outline: none;
- background: transparent;
+
+.input_field {
+    width: 80%;
+    margin: 20px 0;
+    border-left: 0;
+    border-top: 0;
+    border-right: 0;
+    border-bottom: 1px solid #999;
+    outline: none;
+    background: transparent;
 }
-.submitbtn{ 
+
+.submitbtn {
     right: 60px;
     width: 150px;
     height: 30px;
-    display: block; 
+    display: block;
     margin: auto;
-    background:blue;
+    background: blue;
     color: white;
     font-size: 20px;
     margin-right: 70px;
     margin-top: 20px;
-    cursor: pointer;  
-      }
-
-
-
+    cursor: pointer;
+}
