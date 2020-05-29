@@ -28,6 +28,7 @@ function plot_all_charts(location) {
   $.ajax({
     url: "./ml/famousmenu/" + location,
     type: "GET",
+    async: false
   }).done(function (result) {
     console.log(result);
     $("#famous_chart").attr("src", result.img)
@@ -35,6 +36,7 @@ function plot_all_charts(location) {
   $.ajax({
     url: "./ml/onlinedelivery" / + location,
     type: "GET",
+    async: false
   }).done(function (result) {
     console.log(result);
     $("#online_chart").attr("src", result.img)
@@ -42,6 +44,7 @@ function plot_all_charts(location) {
   $.ajax({
     url: "./ml/tablebooking/" + location,
     type: "GET",
+    async: false
   }).done(function (result) {
     console.log(result);
     $("#table_chart").attr("src", result.img)
@@ -49,6 +52,7 @@ function plot_all_charts(location) {
   $.ajax({
     url: "./ml/deliveringnow/" + location,
     type: "GET",
+    async: false
   }).done(function (result) {
     console.log(result);
     $("#delivering_chart").attr("src", result.img)
