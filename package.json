@@ -7,7 +7,7 @@
     "lodash": "4.17.11",
     "package.json": "^2.0.1",
     "popper.js": "1.16.1",
-    "prismjs": "1.20.0",
+    "prismjs": "1.21.0",
     "bootstrap-select": "1.13.17"
   },
   "scripts": {
